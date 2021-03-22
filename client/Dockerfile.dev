@@ -1,0 +1,10 @@
+FROM  node:alpine
+WORKDIR /app
+COPY package.json .
+
+#RUN  npm cache clean --force --unsafe-perm
+#RUN  npm cache clean --force --unsafe-perm && npm install
+RUN npm install
+
+COPY . .
+CMD [ "npm", "start"]
