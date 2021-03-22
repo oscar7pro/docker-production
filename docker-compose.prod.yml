@@ -9,10 +9,10 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile.prod
-    env_file: 
-      - ./api/.env
     environment: 
-      NODE_ENV: production
+      - MONGO_USERNAME
+      - MONGO_PWD
+      - NODE_ENV=production
     restart: unless-stopped
     depends_on: 
       - db
@@ -22,15 +22,21 @@ services:
       - type: volume
         source: dbprod
         target: /data/db
-    env_file: 
-      - ./db/.env
+    environment: 
+      - MONGO_INITDB_ROOT_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD
     restart: unless-stopped
   reverse-proxy:
     build:
       context: ./reverse-proxy
       dockerfile: Dockerfile.prod
     ports: 
-      - 8088:8088
+      - 80:80
+      - 443:443
+    volumes: 
+      - type: bind
+        source: /etc/letsencrypt
+        target: /etc/letsencrypt
     restart: unless-stopped
     depends_on: 
       - api
